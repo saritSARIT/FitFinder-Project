@@ -1,5 +1,5 @@
 
-import { MongoClient, ServerApiVersion } from 'mongodb';
+const { MongoClient, ServerApiVersion } = require('mongodb');
 
 const user = process.env.user;
 const password = process.env.password;
@@ -24,7 +24,9 @@ async function run() {
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
+
+module.exports = { client };
