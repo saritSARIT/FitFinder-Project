@@ -15,7 +15,6 @@ export async function POST(request) {
   const db = client.db("FitFinder");
   const collection = db.collection("Trainee");
   const data = await request.json();
-
   await collection.insertOne(data);
   return NextResponse.json({ message: "Trainee added successfully" });
 }
