@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { client } from "../../../services/server/mongo";
+import { ObjectId } from "mongodb";
 
 // 📍 שליפת כל המאמנים
 export async function GET() {
@@ -19,33 +20,47 @@ export async function POST(request) {
   return NextResponse.json({ message: "Trainer added successfully" }, { status: 201 });
 }
 
-// 📍 עדכון מאמן לפי אימייל
+// 📍 עדכון מאמן לפי מזהה (_id)
 export async function PUT(request) {
-  const db = client.db("FitFinder");
-  const collection = db.collection("Trainer");
-  const data = await request.json();
+  try {
+    const db = client.db("FitFinder");
+    const collection = db.collection("Trainer");
+    const data = await request.json();
+    const { _id, ...updates } = data;
+    const objectId = new ObjectId(_id);
+    const result = await collection.updateOne(
+      { _id: objectId },
+      { $set: updates }
+    );
 
-  const { email, ...updates } = data;
-  const result = await collection.updateOne({ email }, { $set: updates });
+    if (result.matchedCount === 0) {
+      return NextResponse.json({ message: "Trainer not found" }, { status: 404 });
+    }
 
-  if (result.modifiedCount === 0) {
-    return NextResponse.json({ message: "Trainer not found or no changes made" }, { status: 404 });
+    return NextResponse.json({ message: "Trainer updated successfully" });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
-
-  return NextResponse.json({ message: "Trainer updated successfully" });
 }
 
-// 📍 מחיקת מאמן לפי אימייל
+// 📍 מחיקת מאמן לפי מזהה (_id)
 export async function DELETE(request) {
-  const db = client.db("FitFinder");
-  const collection = db.collection("Trainer");
-  const { email } = await request.json();
+  try {
+    const db = client.db("FitFinder");
+    const collection = db.collection("Trainer");
+    const data = await request.json();
+    const { _id } = data;
+    const objectId = new ObjectId(_id);
+    const result = await collection.deleteOne({ _id: objectId });
 
-  const result = await collection.deleteOne({ email });
+    if (result.deletedCount === 0) {
+      return NextResponse.json({ message: "Trainer not found" }, { status: 404 });
+    }
 
-  if (result.deletedCount === 0) {
-    return NextResponse.json({ message: "Trainer not found" }, { status: 404 });
+    return NextResponse.json({ message: "Trainer deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
-
-  return NextResponse.json({ message: "Trainer deleted successfully" });
 }
