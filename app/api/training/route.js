@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { client } from "../../../services/server/mongo";
+import { ObjectId } from "mongodb";
 
 // 📍 שליפת כל האימונים
 export async function GET() {
@@ -21,33 +22,45 @@ export async function POST(request) {
 
 // 📍 עדכון אימון לפי מזהה (_id)
 export async function PUT(request) {
-  const db = client.db("FitFinder");
-  const collection = db.collection("Training");
-  const data = await request.json();
+  try {
+    const db = client.db("FitFinder");
+    const collection = db.collection("Training");
+    const data = await request.json();
+    const { _id, ...updates } = data;
+    const objectId = new ObjectId(_id);
+    const result = await collection.updateOne(
+      { _id: objectId },
+      { $set: updates }
+    );
 
-  const { _id, ...updates } = data;
-  const { ObjectId } = require("mongodb");
-  const result = await collection.updateOne({ _id: new ObjectId(_id) }, { $set: updates });
+    if (result.matchedCount === 0) {
+      return NextResponse.json({ message: "Training not found" }, { status: 404 });
+    }
 
-  if (result.modifiedCount === 0) {
-    return NextResponse.json({ message: "Training not found or no changes made" }, { status: 404 });
+    return NextResponse.json({ message: "Training updated successfully" });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
-
-  return NextResponse.json({ message: "Training updated successfully" });
 }
 
 // 📍 מחיקת אימון לפי מזהה (_id)
 export async function DELETE(request) {
-  const db = client.db("FitFinder");
-  const collection = db.collection("Training");
-  const { _id } = await request.json();
+  try {
+    const db = client.db("FitFinder");
+    const collection = db.collection("Training");
+    const data = await request.json();
+    const { _id } = data;
+    const objectId = new ObjectId(_id);
+    const result = await collection.deleteOne({ _id: objectId });
 
-  const { ObjectId } = require("mongodb");
-  const result = await collection.deleteOne({ _id: new ObjectId(_id) });
+    if (result.deletedCount === 0) {
+      return NextResponse.json({ message: "Training not found" }, { status: 404 });
+    }
 
-  if (result.deletedCount === 0) {
-    return NextResponse.json({ message: "Training not found" }, { status: 404 });
+    return NextResponse.json({ message: "Training deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
-
-  return NextResponse.json({ message: "Training deleted successfully" });
 }
