@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { client } from "../../../services/server/mongo";
 import { ObjectId } from "mongodb";
+import { TrainerSchema } from "../../../models/Trainer";
+import { p } from "framer-motion/client";
 
-// 📍 שליפת כל המאמנים
+// שליפת כל המאמנים
 export async function GET() {
   const db = client.db("FitFinder");
   const collection = db.collection("Trainer");
@@ -10,27 +12,60 @@ export async function GET() {
   return NextResponse.json(trainers);
 }
 
-// 📍 יצירת מאמן חדש
+// יצירת מאמן חדש
 export async function POST(request) {
-  const db = client.db("FitFinder");
-  const collection = db.collection("Trainer");
-  const data = await request.json();
+  try {
+    const db = client.db("FitFinder");
+    const collection = db.collection("Trainer");
+    const data = await request.json();
 
-  await collection.insertOne(data);
-  return NextResponse.json({ message: "Trainer added successfully" }, { status: 201 });
+    // שלב הולידציה
+    const parsed = TrainerSchema.safeParse(data);
+    if (!parsed.success) {
+      const errors = parsed.error.errors.map(e => e.message);
+      return NextResponse.json({ message: "Validation failed", errors }, { status: 400 });
+    }
+
+    const existing = await collection.findOne({ email: parsed.data.email });
+    if (existing) {
+      return NextResponse.json({ message: "Email already exists" }, { status: 400 });
+    }
+
+    await collection.insertOne(parsed.data);
+    return NextResponse.json({ message: "Trainer added successfully" }, { status: 201 });
+  }
+  catch (error) {
+    console.error(error);
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
+  }
 }
 
-// 📍 עדכון מאמן לפי מזהה (_id)
+// עדכון מאמן לפי מזהה (_id)
 export async function PUT(request) {
   try {
     const db = client.db("FitFinder");
     const collection = db.collection("Trainer");
     const data = await request.json();
     const { _id, ...updates } = data;
+
+    // שלב הולידציה
+    const parsed = TrainerSchema.safeParse(updates);
+    if (!parsed.success) {
+      const errors = parsed.error.errors.map(e => e.message);
+      return NextResponse.json({ message: "Validation failed", errors }, { status: 400 });
+    }
+
+    if (parsed.data.email) {
+      const existing = await collection.findOne({ email: parsed.data.email, _id: { $ne: new ObjectId(_id) } });
+      if (existing) {
+        return NextResponse.json({ message: "Email already exists" }, { status: 400 });
+      }
+    }
+
     const objectId = new ObjectId(_id);
     const result = await collection.updateOne(
       { _id: objectId },
-      { $set: updates }
+      { $set: parsed.data }
     );
 
     if (result.matchedCount === 0) {
@@ -44,7 +79,7 @@ export async function PUT(request) {
   }
 }
 
-// 📍 מחיקת מאמן לפי מזהה (_id)
+// מחיקת מאמן לפי מזהה (_id)
 export async function DELETE(request) {
   try {
     const db = client.db("FitFinder");
