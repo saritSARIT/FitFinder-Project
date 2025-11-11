@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     }
 
     const db = await client.db("FitFinder");
-    const users = db.collection("users");
+    const users = db.collection("Trainee");
 
     // בדיקה אם המשתמש כבר קיים
     const existingUser = await users.findOne({ email });

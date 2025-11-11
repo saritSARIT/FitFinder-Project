@@ -18,12 +18,12 @@ export const authOptions = {
         const db = client.db("FitFinder");
 
         // קביעת סוג המשתמש (לדוגמה: ברירת מחדל 'trainee')
-        const type: UserType = "trainee";
+        const type: UserType = "Trainee";
 
         const existing = await findUserByEmail(user.email, db, type);
         if (!existing) {
           await createUser(
-            { name: user.name, email: user.email, image: user.image },
+            { name: user.name, email: user.email, password: user.password },
             db,
             type
           );
@@ -40,7 +40,7 @@ export const authOptions = {
         const db = client.db("FitFinder");
 
         // סוג המשתמש צריך להתאים למה שנשמר במסד
-        const type: UserType = "trainee";
+        const type: UserType = "Trainee";
 
         const dbUser = await findUserByEmail(session.user?.email, db, type);
         if (dbUser) {

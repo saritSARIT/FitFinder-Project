@@ -1,32 +1,20 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import { z } from "zod";
 
-export interface IFavorite {
-  email: string; // trainer's email
-}
 
-export interface ITrainee extends Document {
-  email: string;
-  password: string;
-  name: string;
-  phone: string;
-  isTrainer: boolean;
-  favorites: IFavorite[];
-}
-
-const FavoriteSchema = new Schema<IFavorite>({
-  email: { type: String, required: true },
+export const TraineeSchema = z.object({
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(4, "Password must be at least 4 characters"),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  phone: z.string().min(6, "Too short phone number"),
+  isTrainer: z.boolean().default(false),
+  favorites: z
+    .array(
+      z.object({
+        trainerId: z.string(),
+      })
+    )
+    .default([]),
 });
 
-const TraineeSchema = new Schema<ITrainee>({
-  email: { type: String, unique: true, required: true },
-  password: { type: String, required: true },
-  name: { type: String, required: true },
-  phone: { type: String, required: true },
-  isTrainer: { type: Boolean, default: false },
-  favorites: [FavoriteSchema],
-});
 
-export const Trainee: Model<ITrainee> =
-  mongoose.models.Trainee || mongoose.model<ITrainee>("Trainee", TraineeSchema);
 
-export default Trainee;

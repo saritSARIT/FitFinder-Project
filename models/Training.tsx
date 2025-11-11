@@ -1,30 +1,21 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import { z } from "zod";
 
-export interface ITraining extends Document {
-  date: Date;
-  startTime: string;
-  endTime: string;
-  trainer: string; // trainer's email
-  client: string[]; // clients' emails
-  type: string;
-  address: string;
-  classType: "personal" | "group";
-  status: "sent" | "approved" | "rejected";
-}
 
-const TrainingSchema = new Schema<ITraining>({
-  date: { type: Date, required: true },
-  startTime: { type: String, required: true },
-  endTime: { type: String, required: true },
-  trainer: { type: String, required: true },
-  client: [{ type: String, required: true }],
-  type: { type: String, required: true },
-  address: { type: String, required: true },
-  classType: { type: String, enum: ["personal", "group"], required: true },
-  status: { type: String, enum: ["sent", "approved", "rejected"], required: true },
+export const TrainingSchema = z.object({
+  date: z
+    .string()
+    .refine((val) => !isNaN(Date.parse(val)), "Invalid date format"),
+  startTime: z.string().min(1, "Start time is required"),
+  endTime: z.string().min(1, "End time is required"),
+  trainerId: z.string().min(1, "Trainer ID is required"),
+  traineeId: z
+    .array(z.string().min(1, "Trainee ID cannot be empty"))
+    .min(1, "At least one trainee is required"),
+  type: z.string().min(1, "Type is required"),
+  address: z.string().min(2, "Address must be at least 2 characters"),
+  classType: z.enum(["personal", "group"], "classType must be 'personal' or 'group'"),
+  status: z.enum(["sent", "approved", "rejected"], "status must be 'sent', 'approved' or 'rejected'"),
 });
 
-export const Training: Model<ITraining> =
-  mongoose.models.Training || mongoose.model<ITraining>("Training", TrainingSchema);
 
-export default Training;
+
