@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-
 export const TrainerSchema = z.object({
   email: z.string().email("Invalid email format"),
   trainigTypes: z
@@ -23,6 +22,3 @@ export const TrainerSchema = z.object({
     )
     .default([]),
 });
-
-
-
