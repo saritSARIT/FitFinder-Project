@@ -3,6 +3,7 @@ import { client } from "../../../services/server/mongo";
 import { ObjectId } from "mongodb";
 import { TrainingSchema } from "../../../models/Training";
 
+
 // שליפת כל האימונים
 export async function GET() {
   const db = client.db("FitFinder");
@@ -11,6 +12,7 @@ export async function GET() {
   return NextResponse.json(trainings);
 }
 
+
 // יצירת אימון חדש
 export async function POST(request) {
   try {
@@ -18,12 +20,14 @@ export async function POST(request) {
     const collection = db.collection("Training");
     const data = await request.json();
 
+
     // שלב הולידציה
     const parsed = TrainingSchema.safeParse(data);
     if (!parsed.success) {
       const errors = parsed.error.errors.map(e => e.message);
       return NextResponse.json({ message: "Validation failed", errors }, { status: 400 });
     }
+
 
     await collection.insertOne(parsed.data);
     return NextResponse.json({ message: "Training added successfully" }, { status: 201 });
@@ -34,6 +38,7 @@ export async function POST(request) {
   }
 }
 
+
 // עדכון אימון לפי מזהה (_id)
 export async function PUT(request) {
   try {
@@ -42,6 +47,7 @@ export async function PUT(request) {
     const data = await request.json();
     const { _id, ...updates } = data;
 
+
     // שלב הולידציה
     const parsed = TrainingSchema.safeParse(updates);
     if (!parsed.success) {
@@ -49,15 +55,18 @@ export async function PUT(request) {
       return NextResponse.json({ message: "Validation failed", errors }, { status: 400 });
     }
 
+
     const objectId = new ObjectId(_id);
     const result = await collection.updateOne(
       { _id: objectId },
       { $set: parsed.data }
     );
 
+
     if (result.matchedCount === 0) {
       return NextResponse.json({ message: "Training not found" }, { status: 404 });
     }
+
 
     return NextResponse.json({ message: "Training updated successfully" });
   } catch (error) {
@@ -65,6 +74,7 @@ export async function PUT(request) {
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }
+
 
 // מחיקת אימון לפי מזהה (_id)
 export async function DELETE(request) {
@@ -76,9 +86,11 @@ export async function DELETE(request) {
     const objectId = new ObjectId(_id);
     const result = await collection.deleteOne({ _id: objectId });
 
+
     if (result.deletedCount === 0) {
       return NextResponse.json({ message: "Training not found" }, { status: 404 });
     }
+
 
     return NextResponse.json({ message: "Training deleted successfully" });
   } catch (error) {
@@ -86,3 +98,6 @@ export async function DELETE(request) {
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }
+
+
+
