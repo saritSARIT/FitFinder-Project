@@ -1,40 +1,28 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import { z } from "zod";
 
-export interface IComment {
-  clientEmail: string;
-  comment: string;
-}
 
-export interface ITrainerTraining {
-  trainingId: string;
-}
-
-export interface ITrainer extends Document {
-  email: string;
-  trainigTypes: string[];
-  address: string;
-  trainings: ITrainerTraining[];
-  comments: IComment[];
-}
-
-const TrainerTrainingSchema = new Schema<ITrainerTraining>({
-  trainingId: { type: String, required: true },
+export const TrainerSchema = z.object({
+  email: z.string().email("Invalid email format"),
+  trainigTypes: z
+    .array(z.string().min(1, "Training type cannot be empty"))
+    .min(1, "At least one training type is required"),
+  address: z.string().min(2, "Address must be at least 2 characters"),
+  trainings: z
+    .array(
+      z.object({
+        trainingId: z.string().min(1, "trainingId cannot be empty"),
+      })
+    )
+    .default([]),
+  comments: z
+    .array(
+      z.object({
+        traineeName: z.string().min(2, "Trainee name must be at least 2 characters"),
+        comment: z.string().min(1, "Comment cannot be empty"),
+      })
+    )
+    .default([]),
 });
 
-const CommentSchema = new Schema<IComment>({
-  clientEmail: { type: String, required: true },
-  comment: { type: String, required: true },
-});
 
-const TrainerSchema = new Schema<ITrainer>({
-  email: { type: String, unique: true, required: true },
-  trainigTypes: [{ type: String, required: true }],
-  address: { type: String, required: true },
-  trainings: [TrainerTrainingSchema],
-  comments: [CommentSchema],
-});
 
-export const Trainer: Model<ITrainer> =
-  mongoose.models.Trainer || mongoose.model<ITrainer>("Trainer", TrainerSchema);
-
-export default Trainer;

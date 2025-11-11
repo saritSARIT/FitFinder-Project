@@ -1,4 +1,5 @@
 "use client";
+import { signIn } from "next-auth/react";
 import { motion } from "framer-motion";
 
 export default function Login({ onClose }: { onClose: () => void }) {
@@ -14,7 +15,7 @@ export default function Login({ onClose }: { onClose: () => void }) {
         <button className="close-btn" onClick={onClose}>✕</button>
       </div>
 
-      <form className="modal-form">
+      <form className="modal-form" onSubmit={(e) => e.preventDefault()}>
         <label>אימייל</label>
         <input type="email" placeholder="example@gmail.com" />
 
@@ -22,6 +23,16 @@ export default function Login({ onClose }: { onClose: () => void }) {
         <input type="password" placeholder="••••••" />
 
         <button type="submit" className="btn-submit">התחבר</button>
+
+        <hr />
+
+        <button
+          type="button"
+          className="btn-google"
+          onClick={() => signIn("google")}
+        >
+          התחבר עם Google
+        </button>
       </form>
     </motion.div>
   );
