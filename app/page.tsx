@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import Login from "@/components/Login";
 import SignUp from "@/components/Signup";
+import { signIn } from "next-auth/react";
 
 export default function Home() {
   const images = [
@@ -53,6 +54,12 @@ export default function Home() {
       <div className="logo-section">
         <Image src="/images/logo.png" alt="FitFinder Logo" width={100} height={100} />
       </div>
+      <button
+  onClick={() => signIn("google")}
+  className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition mt-2"
+>
+  Sign in with Google
+</button>
 
       {/* כפתורים */}
       <div className="buttons-section">
