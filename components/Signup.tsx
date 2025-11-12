@@ -1,5 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
+import { signIn } from "next-auth/react";
 
 export default function SignUp({ onClose }: { onClose: () => void }) {
   return (
@@ -14,7 +15,7 @@ export default function SignUp({ onClose }: { onClose: () => void }) {
         <button className="close-btn" onClick={onClose}>✕</button>
       </div>
 
-      <form className="modal-form">
+      <form className="modal-form" onSubmit={(e) => e.preventDefault()}>
         <label>שם מלא</label>
         <input type="text" placeholder="הקלד/י שם מלא" />
 
@@ -28,6 +29,16 @@ export default function SignUp({ onClose }: { onClose: () => void }) {
         <input type="tel" placeholder="050-1234567" />
 
         <button type="submit" className="btn-submit">הירשם</button>
+
+        <hr />
+
+        <button
+          type="button"
+          className="btn-google"
+          onClick={() => signIn("google")}
+        >
+          הירשם עם Google
+        </button>
       </form>
     </motion.div>
   );
