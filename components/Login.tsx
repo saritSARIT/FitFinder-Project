@@ -1,6 +1,7 @@
 "use client";
 import { signIn } from "next-auth/react";
 import { motion } from "framer-motion";
+import { FcGoogle } from "react-icons/fc";
 
 export default function Login({ onClose }: { onClose: () => void }) {
   return (
@@ -26,13 +27,14 @@ export default function Login({ onClose }: { onClose: () => void }) {
 
         <hr />
 
-        <button
-          type="button"
-          className="btn-google"
-          onClick={() => signIn("google")}
-        >
-          התחבר עם Google
-        </button>
+  <button
+        type="button"
+        className="btn-google"
+        onClick={() => signIn("google")}
+      >
+        <FcGoogle className="text-xl" />
+        logIn with Google
+      </button>
       </form>
     </motion.div>
   );
