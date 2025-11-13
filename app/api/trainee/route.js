@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { client } from "../../../services/server/mongo";
+import { client } from "../../services/server/mongo";
 import { TraineeSchema } from "../../../models/Trainee";
 
 
