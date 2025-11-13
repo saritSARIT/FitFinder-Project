@@ -1,6 +1,6 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const user = process.env.user;
-const password = process.env.password;
+const user = process.env.MONGO_USER;
+const password = process.env.MONGO_PASSWORD;
 
 if (!user || !password) throw new Error("Missing MongoDB credentials in .env");
 
