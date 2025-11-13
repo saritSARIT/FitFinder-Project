@@ -1,26 +1,31 @@
-// app/services/server/mongo.ts
-import { MongoClient, ServerApiVersion } from "mongodb";
-
-const user = process.env.MONGO_USER;
-const password = process.env.MONGO_PASSWORD;
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const user = process.env.user;
+const password = process.env.password;
 
 if (!user || !password) throw new Error("Missing MongoDB credentials in .env");
 
 const uri = `mongodb+srv://${user}:${password}@fitfinder.mpjxiuc.mongodb.net/?appName=FitFinder`;
-
-export const client = new MongoClient(uri, {
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  },
+  }
 });
 
-(async () => {
+async function run() {
   try {
+    // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-    console.log("✅ MongoDB connected successfully!");
-  } catch (err) {
-    console.error("❌ MongoDB connection error:", err);
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } finally {
+    // Ensures that the client will close when you finish/error
+    //await client.close();
   }
-})();
+}
+run().catch(console.dir);
+
+module.exports = { client };

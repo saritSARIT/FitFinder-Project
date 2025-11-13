@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-
 export const TrainingSchema = z.object({
   date: z
     .string()
@@ -16,6 +15,3 @@ export const TrainingSchema = z.object({
   classType: z.enum(["personal", "group"], "classType must be 'personal' or 'group'"),
   status: z.enum(["sent", "approved", "rejected"], "status must be 'sent', 'approved' or 'rejected'"),
 });
-
-
-

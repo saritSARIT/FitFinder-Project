@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "models/Trainee.js", "models/Trainer.js", "models/Training.js"  ],
   "exclude": ["node_modules"]
 }

@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useState } from "react";
 import Login from "@/components/Login";
 import SignUp from "@/components/Signup";
+import { signIn } from "next-auth/react";
 
 export default function Home() {
   const [showLogin, setShowLogin] = useState(false);

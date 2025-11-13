@@ -10,7 +10,7 @@ export interface BaseUser {
   password: string;
 }
 
-// פונקציות גנריות
+
 export async function findUserByEmail(email: string, db: Db, type: UserType) {
   const collection = type === "trainer" ? "trainer" : "Trainee";
   return await db.collection<BaseUser>(collection).findOne({ email });
