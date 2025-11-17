@@ -1,14 +1,20 @@
 import { NextResponse } from "next/server";
-import { client } from "../../../services/server/mongo";
+import { client } from "../../services/server/mongo";
 import { TraineeSchema } from "../../../models/Trainee";
 
 
 // שליפת כל המתאמנים
 export async function GET() {
-  const db = client.db("FitFinder");
-  const collection = db.collection("Trainee");
-  const trainees = await collection.find({}).toArray();
-  return NextResponse.json(trainees);
+  try {
+    const db = client.db("FitFinder");
+    const collection = db.collection("Trainee");
+    const trainees = await collection.find({}).toArray();
+    return NextResponse.json(trainees);
+
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
+  }
 }
 
 

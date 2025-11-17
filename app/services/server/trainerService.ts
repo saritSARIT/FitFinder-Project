@@ -57,11 +57,10 @@ export async function editTrainerDetails(id: string, updates: any) {
 export async function getTrainerTrainings(trainerId: string) {
     try {
         const db = client.db("FitFinder");
-        const trainingsCollection = db.collection("Training");
-
-        const trainings = await trainingsCollection.find({ trainerId }).toArray();
-
+        const collection = db.collection("Training");
+        const trainings = await collection.find({ trainerId: trainerId }).toArray();
         return NextResponse.json(trainings);
+        
     } catch (error) {
         console.error(error);
         return NextResponse.json({ message: "Server error" }, { status: 500 });
