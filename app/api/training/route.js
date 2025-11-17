@@ -5,10 +5,16 @@ import { TrainingSchema } from "../../../models/Training";
 
 // שליפת כל האימונים
 export async function GET() {
-  const db = client.db("FitFinder");
-  const collection = db.collection("Training");
-  const trainings = await collection.find({}).toArray();
-  return NextResponse.json(trainings);
+  try {
+    const db = client.db("FitFinder");
+    const collection = db.collection("Training");
+    const trainings = await collection.find({}).toArray();
+    return NextResponse.json(trainings);
+
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
+  }
 }
 
 
