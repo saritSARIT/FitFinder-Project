@@ -39,3 +39,4 @@ export default function Login({ onClose }: { onClose: () => void }) {
     </motion.div>
   );
 }
+

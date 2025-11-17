@@ -45,3 +45,4 @@ export default function SignUp({ onClose }: { onClose: () => void }) {
     </motion.div>
   );
 }
+
